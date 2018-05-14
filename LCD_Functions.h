@@ -295,12 +295,7 @@ void ligneEcran(int x0, int y0, int x1, int y1, boolean bw)
   }
 }
 
-// creerRectangle will draw a rectangle from x0,y0 top-left corner to
-// a x1,y1 bottom-right corner. Can be filled with the fill
-// parameter, and colored with bw.
-// This function was grabbed from the SparkFun ColorLCDShield
-// library.
-void creerRectangle(int x0, int y0, int x1, int y1, boolean fill, boolean bw)
+void createRectangle(int x0, int y0, int x1, int y1, boolean fill, boolean bw)
 {
   // check if the rectangle is to be filled
   if (fill == 1)
@@ -333,6 +328,7 @@ void creerRectangle(int x0, int y0, int x1, int y1, boolean fill, boolean bw)
     ligneEcran(x1, y0, x1, y1, bw);
   }
 }
+
 
 // setCircle draws a circle centered around x0,y0 with a defined
 // radius. The circle can be black or white. And have a line
@@ -498,7 +494,7 @@ void invertDisplay()
 //This sends the magical commands to the PCD8544
 void lcdBegin(void)
 {
-    
+
   //Configure control pins
   pinMode(scePin, OUTPUT);
 //  pinMode(rstPin, OUTPUT);
@@ -517,7 +513,7 @@ void lcdBegin(void)
     PORTB &= ~(1 << PORTB7);
     delay(500);
     PORTB |= (1 << PORTB7);
-    
+
   //Reset the LCD to a known state
 //  digitalWrite(rstPin, LOW);
 //  digitalWrite(rstPin, HIGH);
@@ -530,5 +526,3 @@ void lcdBegin(void)
   LCDWrite(LCD_COMMAND, 0x20);
   LCDWrite(LCD_COMMAND, 0x0C); //Set display control, normal mode.
 }
-
-
