@@ -31,9 +31,9 @@ const unsigned int BUF_LEN =  NOKIA_WIDTH * NOKIA_HEIGHT / 8;
 
 void kitco_lcd_timer2()
 {
-	OCR2A = 255;
+	OCR2A = 80;
 	TCCR2A |= (1 << WGM21); // Set to CTC Mode
-	TIMSK2 |= (1 << OCIE2A); // Set interrupt on compare match
+	TIMSK2 |= (1 << OCIE2A); //Set interrupt on compare match
 	TCCR2B |= (1 << CS21) | (1 << CS20) | (1 << CS22); // set prescaler to 1024 and starts PWM
 	// freq = 8MHz/(1024*32) = 244Hz (4ms)
 	sei();

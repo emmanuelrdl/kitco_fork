@@ -10,7 +10,7 @@ kitco_video_buffer vidbuf;
 int main(void) {
 
 	kitco_init();
-	//kitco_lcd_checkerboard();
+	kitco_lcd_checkerboard();
 	kitco_lcd_buffer_create(&vidbuf, 2);
 	kitco_lcd_buffer_clean(&vidbuf, 0);
 
@@ -26,28 +26,32 @@ int main(void) {
     	}
     }
 
-	//kitco_lcd_timer2();
+    kitco_lcd_buffer_draw(&vidbuf);
 
+	kitco_lcd_timer2();
+    /*
     int ms=10;
     while(1) {
     	kitco_lcd_buffer_draw(&vidbuf);
     	_delay_ms(ms);
     }
+	*/
 
+	while ( 1 )
+	{ ;; }
+
+	return 0;
 }
 
-int offset = 0;
-ISR (TIMER2_COMPA_vect)
+volatile uint16_t offset;
+
+ISR(TIMER2_COMPA_vect)
 {
-	if( offset == 0 )
-	{
-		PORTC ^= _BV(KITCO_LEDRED);
-		kitco_lcd_buffer_draw(&vidbuf);
-	}
-	offset++;
-	offset%=50;
+	//PORTC ^= _BV(PC2);
+	kitco_lcd_buffer_draw(&vidbuf);
 }
-/*
+
+
 ISR (TIMER1_OVF_vect)
 {
 	if( offset == 0 )
@@ -58,4 +62,4 @@ ISR (TIMER1_OVF_vect)
 	offset++;
 	offset%=50;
 }
-*/
+
