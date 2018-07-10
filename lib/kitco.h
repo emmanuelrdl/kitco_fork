@@ -1,16 +1,16 @@
 #ifndef _KITCO_H_
 #define _KITCO_H_
 
-#include "kitco_nokia.h"
+typedef enum {
+	A = 1,
+	B = 2,
+	UP = 4,
+	LEFT = 16,
+	DOWN = 32,
+	RIGHT = 64
+} kitco_button;
 
-#define KITCO_LEDGREEN PC3
-#define KITCO_LEDRED PC2
-
-void kitco_init(void)
-{
-	DDRC |= _BV(KITCO_LEDGREEN);
-	DDRC |= _BV(KITCO_LEDRED);
-	kitco_lcd_init();
-}
+void kitco_init(void);
+unsigned char kitco_button_states();
 
 #endif

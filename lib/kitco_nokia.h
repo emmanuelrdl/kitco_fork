@@ -8,22 +8,14 @@
 #ifndef KITCO_NOKIA_H_
 #define KITCO_NOKIA_H_
 
-#define NOKIACS PB1
-#define NOKIADC PB2
-#define NOKIASD PB3
-#define NOKIACL PB5
-#define NOKIARST PB7
-
-#define NOKIALIGHT PD5
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct {
-	unsigned char *buffer;
-	unsigned char depth;
-	unsigned char phase;
+	volatile unsigned char * buffer;
+	volatile unsigned char depth;
+	volatile unsigned char phase;
 } kitco_video_buffer;
 
 void kitco_lcd_init();
