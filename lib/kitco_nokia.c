@@ -7,7 +7,7 @@
 #define LCD_PWM_V2
 
 #include "kitco_nokia.h"
-#include "kitco_nokia_chars.h"
+#include "kitco_graphic_chars.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdlib.h>
