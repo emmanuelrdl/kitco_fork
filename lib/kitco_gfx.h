@@ -11,6 +11,10 @@ typedef struct {
 	const unsigned char *data;
 } kitco_image_P;
 
+typedef struct {
+
+} kitco_gfx_crop;
+
 /*
 void copy_image(const unsigned char *img,
 		unsigned int width,

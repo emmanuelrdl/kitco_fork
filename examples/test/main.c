@@ -4,7 +4,7 @@
 
 #include <kitco.h>
 #include <kitco_nokia.h>
-#include <kitco_graphic.h>
+#include <kitco_gfx.h>
 #include "pidgeot.h"
 #include "pikachu.h"
 
@@ -15,7 +15,7 @@ int main(void) {
 
 	kitco_init();
 	kitco_lcd_checkerboard();
-	kitco_lcd_buffer_create(&vidbuf, 2);
+	kitco_lcd_buffer_create(&vidbuf, 1);
 	kitco_lcd_buffer_clean(&vidbuf, 0);
 	kitco_lcd_timer2();
 
@@ -35,7 +35,7 @@ int main(void) {
 
 		if( offset == 0 )
 		{
-			copy_image(toggle ? &pidgeot : &pikachu, 0, 0, vidbuf);
+			copy_image(toggle ? &pidgeot : &pikachu, 4, 4, vidbuf);
 			toggle = (toggle+1)%2;
 		}
 		offset++;

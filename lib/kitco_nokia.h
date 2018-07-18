@@ -12,6 +12,9 @@
 extern "C" {
 #endif
 
+#define NOKIA_WIDTH      84
+#define NOKIA_HEIGHT     48
+
 typedef struct {
 	volatile unsigned char * buffer;
 	volatile unsigned char depth;

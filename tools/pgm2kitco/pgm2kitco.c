@@ -47,6 +47,9 @@ int main(int argc, char **argv)
     	uint8_t toomanygreys = 0;
     	int greys[4] = {-1,-1,-1,-1};
 
+    	uint8_t *data;
+    	uint32_t data_i=0;
+
     	int c;
 	    while ((c = getc(file)) != EOF)
 	    {
@@ -61,6 +64,7 @@ int main(int argc, char **argv)
 	    			imgh = buf;
 	    			buf = 0;
 	    			fprintf(stderr, "size: %dx%d\n", imgw, imgh);
+	    			data = malloc(imgw*imgh*sizeof(uint8_t));
 	    		}
 	    		else {
 	    			buf = buf*10 + (c-0x30);
@@ -68,6 +72,7 @@ int main(int argc, char **argv)
 	    	}
 	    	else if (remaining0A == 0) // pix data
 	    	{
+	    		data[data_i++] = c;
 	    		greymin = MIN(greymin, c);
 	    		greymax = MAX(greymax, c);
 	    		if (!toomanygreys)
@@ -88,6 +93,7 @@ int main(int argc, char **argv)
 
 	    	dataseek++;
 	    }
+	    fclose(file);
 
 	    fprintf(stderr, "value min: %x\nvalue max: %x\n", greymin, greymax);
 
@@ -98,34 +104,40 @@ int main(int argc, char **argv)
 	    qsort(greys, 4, sizeof(int), cmpfunc);
 	    greys[0] = greymin;
 	    greys[3] = greymax;
-	    fprintf(stderr, "greys %d %d %d %d\n",
-	    		greys[0],
-	    		greys[1],
-	    		greys[2],
-	    		greys[3]
-	    		);
+	    fprintf(stderr, "greys %d %d %d %d\n", greys[0], greys[1], greys[2], greys[3]);
 
-	    fseek(file, dataseek, SEEK_SET);
-	    uint16_t j = 0;
-	    while ((c = getc(file)) != EOF)
+	    uint8_t sum=0;
+	    uint32_t i=0;
+    	uint8_t o = 0;
+	    // MSB
+	    for (i=0; i<data_i; i++)
 	    {
-	    	uint8_t o = 0;
-	    	while (c > greys[o] && ++o < 3);
-	    	printf("%d", o);
+	    	sum |= (data[i] > greys[1] ? 0 : (1<<i%8));
 
-	    	j++;
-	    	if (j != imgw*imgh)
+	    	if (i%8 == 7 || i+1 == data_i)
 	    	{
-		    	printf(",");
-	    		if (j % imgw == 0) {
-	    			printf("\n");
-	    		}
+	    		printf("0x%x,", sum);
+	    		sum = 0;
+	    	}
+	    }
+	    printf("\n");
+	    // LSB
+	    sum=0;
+	    for (i=0; i<data_i; i++)
+	    {
+	    	o=0;
+	    	while (data[i] > greys[o] && ++o < 3);
+	    	sum |= (3-o & 1) << i%8;
+
+	    	if (i%8 == 7 || i+1 == data_i)
+	    	{
+	    		printf("0x%x%c", sum, i+1 == data_i ? ' ' : ',');
+	    		sum = 0;
 	    	}
 	    }
 
 	    printf("};");
-
-	    fclose(file);
+	    free(data);
 	}
 	else
 	{

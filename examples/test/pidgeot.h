@@ -5,7 +5,8 @@
  *      Author: chris
  */
 #include <avr/pgmspace.h>
-#include <kitco_graphic.h>
+
+#include "../../lib/kitco_gfx.h"
 
 #ifndef PIDGEOT_H_
 #define PIDGEOT_H_

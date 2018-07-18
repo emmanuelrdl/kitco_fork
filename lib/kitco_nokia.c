@@ -7,7 +7,7 @@
 #define LCD_PWM_V2
 
 #include "kitco_nokia.h"
-#include "kitco_graphic_chars.h"
+#include "kitco_gfx_chars.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdlib.h>
@@ -21,9 +21,6 @@
 #define NOKIARST PB7
 
 #define NOKIALIGHT PD5
-
-#define NOKIA_WIDTH      84
-#define NOKIA_HEIGHT     48
 
 #define kitco_lcd_enable() PORTB &= ~_BV(NOKIACS)
 #define kitco_lcd_disable() PORTB |= _BV(NOKIACS)
