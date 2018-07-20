@@ -21,9 +21,13 @@ void copy_image(const unsigned char *img,
 		unsigned int height,
 		kitco_video_buffer buf);
 		*/
-void copy_image(const kitco_image_P *img,
-		unsigned int x,
-		unsigned int y,
+int copy_image(const kitco_image_P *img,
+		unsigned char from_x,
+		unsigned char from_y,
+		unsigned char copy_width,
+		unsigned char copy_height,
+		unsigned char to_x,
+		unsigned char to_y,
 		kitco_video_buffer buf);
 
 #endif

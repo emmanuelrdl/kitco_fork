@@ -35,7 +35,12 @@ int main(void) {
 
 		if( offset == 0 )
 		{
-			copy_image(toggle ? &pidgeot : &pikachu, 4, 4, vidbuf);
+			//(toggle ? &pidgeot : &pikachu)
+			copy_image(&pikachu,
+					0,0,
+					84,48,
+					0,0,
+					vidbuf);
 			toggle = (toggle+1)%2;
 		}
 		offset++;
