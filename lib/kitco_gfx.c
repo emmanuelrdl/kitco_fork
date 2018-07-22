@@ -20,7 +20,7 @@ int copy_image(const kitco_image_P *img,
 	if (to_x >= NOKIA_WIDTH || to_y >= NOKIA_HEIGHT) return -1;
 
 	unsigned char *data = (unsigned char *)pgm_read_word_near(&(img->data));
-	unsigned char img_w = pgm_read_byte_near(&(img->width));
+	//unsigned char img_w = pgm_read_byte_near(&(img->width));
 	unsigned char img_h = pgm_read_byte_near(&(img->height));
 	unsigned char img_d = pgm_read_byte_near(&(img->depth));
 	unsigned int img_data1_len = 504;

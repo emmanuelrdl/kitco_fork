@@ -15,7 +15,7 @@ int main(void) {
 
 	kitco_init();
 	kitco_lcd_checkerboard();
-	kitco_lcd_buffer_create(&vram, 1);
+	kitco_lcd_buffer_create(&vram, 2);
 	kitco_lcd_buffer_clean(&vram, 0);
 	kitco_lcd_timer2();
 
@@ -39,7 +39,7 @@ int main(void) {
 					0,0,
 					toggle ? 60 : 84, toggle ? 30 : 48,
 					toggle ? 0 : 30, toggle ? 0 : 15,
-					vram);
+					&vram);
 			toggle = (toggle+1)%2;
 		}
 		offset++;
