@@ -8,15 +8,15 @@
 #include "pidgeot.h"
 #include "pikachu.h"
 
-kitco_video_buffer vidbuf;
+kitco_video_vram vram;
 volatile uint16_t offset, toggle=0;
 
 int main(void) {
 
 	kitco_init();
 	kitco_lcd_checkerboard();
-	kitco_lcd_buffer_create(&vidbuf, 1);
-	kitco_lcd_buffer_clean(&vidbuf, 0);
+	kitco_lcd_buffer_create(&vram, 1);
+	kitco_lcd_buffer_clean(&vram, 0);
 	kitco_lcd_timer2();
 
 	while(1)
@@ -35,12 +35,11 @@ int main(void) {
 
 		if( offset == 0 )
 		{
-			//(toggle ? &pidgeot : &pikachu)
-			copy_image(&pikachu,
+			copy_image((toggle ? &pidgeot : &pikachu),
 					0,0,
-					84,48,
-					0,0,
-					vidbuf);
+					toggle ? 60 : 84, toggle ? 30 : 48,
+					toggle ? 0 : 30, toggle ? 0 : 15,
+					vram);
 			toggle = (toggle+1)%2;
 		}
 		offset++;
@@ -53,7 +52,7 @@ int main(void) {
 ISR(TIMER2_COMPA_vect)
 {
 	//PORTC ^= _BV(PC2);
-	kitco_lcd_buffer_draw(&vidbuf);
+	kitco_lcd_buffer_draw(&vram);
 }
 
 
@@ -62,7 +61,7 @@ ISR (TIMER1_OVF_vect)
 	if( offset == 0 )
 	{
 		//PORTC ^= _BV(KITCO_LEDGREEN);
-		kitco_lcd_buffer_draw(&vidbuf);
+		kitco_lcd_buffer_draw(&vram);
 	}
 	offset++;
 	offset%=50;

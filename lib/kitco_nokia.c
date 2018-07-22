@@ -32,9 +32,6 @@
 
 // -----------------------------
 
-const unsigned int BUF_LEN =  NOKIA_WIDTH * NOKIA_HEIGHT / 8;
-const unsigned int BUF_LEN2 =  BUF_LEN * 2;
-
 void kitco_lcd_timer2()
 {
 	OCR2A = 90;
@@ -59,25 +56,25 @@ void kitco_lcd_timer1()
 	sei();
 }
 
-void kitco_lcd_buffer_create(kitco_video_buffer *buf, unsigned char depth)
+void kitco_lcd_buffer_create(kitco_video_vram *buf, unsigned char depth)
 {
 	if (buf->depth == 0) // initialized ?
 	{
 		buf->depth = depth;
 		buf->phase = 0;
-		buf->buffer = malloc(depth * BUF_LEN * sizeof(unsigned char));
+		buf->data = malloc(depth * BUF_LEN * sizeof(unsigned char));
 	}
 }
 
-void kitco_lcd_buffer_destroy(kitco_video_buffer *buf)
+void kitco_lcd_buffer_destroy(kitco_video_vram *buf)
 {
-	free((unsigned char *)buf->buffer);
+	free((unsigned char *)buf->data);
 	buf->depth=0;
 }
 
-void kitco_lcd_buffer_clean(kitco_video_buffer *buf, unsigned char color)
+void kitco_lcd_buffer_clean(kitco_video_vram *buf, unsigned char color)
 {
-	memset((unsigned char *)buf->buffer, color, BUF_LEN*buf->depth);
+	memset((unsigned char *)buf->data, color, BUF_LEN*buf->depth);
 }
 
 void kitco_lcd_send_data(unsigned char data)
@@ -98,7 +95,7 @@ void kitco_lcd_send_command(unsigned char data)
 	kitco_lcd_disable();
 }
 
-void kitco_lcd_buffer_draw(kitco_video_buffer *buf)
+void kitco_lcd_buffer_draw(kitco_video_vram *buf)
 {
 	kitco_lcd_enable();
 	kitco_lcd_setcommand();
@@ -109,24 +106,24 @@ void kitco_lcd_buffer_draw(kitco_video_buffer *buf)
 	_delay_us(10);
 
 	unsigned char phase = buf->phase;
-	unsigned char *buffer = (unsigned char *)buf->buffer;
+	unsigned char *buffer = (unsigned char *)buf->data;
 	if(buf->depth == 2)
 	{
 		if (phase == 0)
-			for (int i=0; i < BUF_LEN2; i+=2) {
-				kitco_lcd_raw(buffer[i]|buffer[i+1]);	// | ---|
+			for (int i=0; i < BUF_LEN; i++) {
+				kitco_lcd_raw(buffer[i]|buffer[i+BUF_LEN]);	// | ---|
 			}
 #ifndef LCD_PWM_V2
 		else if (phase == 1)
 #else
 		else if (phase == 2)
 #endif
-			for(int i=0; i<BUF_LEN2; i+=2) {
+			for(int i=0; i<BUF_LEN; i++) {
 				kitco_lcd_raw(buffer[i]);				// |  --|
 			}
 		else
-			for (int i=0; i < BUF_LEN2; i+=2) {
-				kitco_lcd_raw(buffer[i]&buffer[i+1]);	// |   -|
+			for (int i=0; i < BUF_LEN; i++) {
+				kitco_lcd_raw(buffer[i]&buffer[i+BUF_LEN]);	// |   -|
 			}
 	}
 	else

@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#define DEFAULT_NAME "image"
+
 #define MAX(a,b) ((a) > (b) ? a : b)
 #define MIN(a,b) ((a) < (b) ? a : b)
 
@@ -23,13 +25,24 @@ int cmpfunc (const void * a, const void * b) {
    return ( *(int*)a - *(int*)b );
 }
 
+void usage()
+{
+	fprintf(stderr, "usage:\n\tpgm2kitco <pgm file> [name]");
+}
+
 int main(int argc, char **argv)
 {
 	char* pgm;
+	char* image_name = 0;
 
-	for(int i=0; i<argc; i++) {
-		pgm = argv[i];
+	if(argc == 1) {
+		usage();
+		exit(1);
 	}
+	if(argc > 1)
+		pgm = argv[1];
+	if(argc > 2)
+		image_name = argv[2];
 
 	fprintf(stderr, "path: %s\n", pgm);
 
@@ -96,47 +109,80 @@ int main(int argc, char **argv)
 	    fclose(file);
 
 	    fprintf(stderr, "value min: %x\nvalue max: %x\n", greymin, greymax);
-
-	    printf("int image_width = %d;\n", imgw);
-	    printf("int image_height = %d;\n", imgh);
-	    printf("unsigned char image[] = {\n");
-
 	    qsort(greys, 4, sizeof(int), cmpfunc);
 	    greys[0] = greymin;
 	    greys[3] = greymax;
 	    fprintf(stderr, "greys %d %d %d %d\n", greys[0], greys[1], greys[2], greys[3]);
 
-	    uint8_t sum=0;
-	    uint32_t i=0;
-    	uint8_t o = 0;
-	    // MSB
-	    for (i=0; i<data_i; i++)
-	    {
-	    	sum |= (data[i] > greys[1] ? 0 : (1<<i%8));
+/////////////////////////////
 
-	    	if (i%8 == 7 || i+1 == data_i)
+	    printf("/* generated with pgm2kitco */\n\n");
+
+	    printf("#include <avr/pgmspace.h>\n");
+	    printf("#include <kitco_gfx.h>\n\n");
+
+	    printf("#ifndef %s_H_\n", image_name != 0 ? image_name : "_pidgeot");
+	    printf("#define %s_H_\n\n", image_name != 0 ? image_name : "_pidgeot");
+
+	    printf("const unsigned char PROGMEM _%s[] = {\n", image_name != 0 ? image_name : "_pidgeot");
+
+	    uint8_t buf8 = 0;
+	    uint8_t counter = 0;
+	    uint16_t index;
+
+	    for(int x=0; x<imgw; x++)
+	    {
+	    	for(int y=0; y<imgh; y++)
 	    	{
-	    		printf("0x%x,", sum);
-	    		sum = 0;
+	    		index = x + y*imgw;
+		    	buf8 |= (data[index] > greys[1] ? 0 : (1<<counter));
+
+	    		if(++counter == 8)
+	    		{
+	    			printf("0x%x,", buf8);
+	    			counter = 0;
+	    			buf8 = 0;
+	    		}
 	    	}
 	    }
+
+		if(counter != 0)
+			printf("0x%x,", buf8);
+
 	    printf("\n");
-	    // LSB
-	    sum=0;
-	    for (i=0; i<data_i; i++)
-	    {
-	    	o=0;
-	    	while (data[i] > greys[o] && ++o < 3);
-	    	sum |= (3-o & 1) << i%8;
 
-	    	if (i%8 == 7 || i+1 == data_i)
+		counter = 0;
+    	uint8_t o = 0;
+    	buf8 = 0;
+	    for(int x=0; x<imgw; x++)
+	    {
+	    	for(int y=0; y<imgh; y++)
 	    	{
-	    		printf("0x%x%c", sum, i+1 == data_i ? ' ' : ',');
-	    		sum = 0;
+	    		index = x + y*imgw;
+		    	o=0;
+		    	while (data[index] > greys[o] && ++o < 3);
+		    	buf8 |= ((3-o) & 1) << counter;
+
+	    		if(++counter == 8)
+	    		{
+	    			printf("0x%x%c", buf8, (x+1 == imgw && y+1 == imgh) ? '\n' : ',');
+	    			counter = 0;
+	    			buf8 = 0;
+	    		}
 	    	}
 	    }
 
-	    printf("};");
+		if(counter != 0)
+			printf("0x%x", buf8);
+
+	    printf("};\n");
+	    printf("const kitco_image_P PROGMEM %s = { %d, %d, 2, _%s };\n\n",
+	    		image_name != 0 ? image_name : "_pidgeot",
+	    		imgw,
+				imgh,
+				image_name != 0 ? image_name : "_pidgeot");
+
+	    printf("#endif\n");
 	    free(data);
 	}
 	else

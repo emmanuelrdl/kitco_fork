@@ -7,7 +7,7 @@
 typedef struct {
 	unsigned char width;
 	unsigned char height;
-	unsigned char detph;
+	unsigned char depth;
 	const unsigned char *data;
 } kitco_image_P;
 
@@ -28,6 +28,6 @@ int copy_image(const kitco_image_P *img,
 		unsigned char copy_height,
 		unsigned char to_x,
 		unsigned char to_y,
-		kitco_video_buffer buf);
+		kitco_video_vram *buf);
 
 #endif
